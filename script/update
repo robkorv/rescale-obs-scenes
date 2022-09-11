@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# script/update: Update application to run for its current checkout.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+ECHO_PREPEND="${0##*/} ==>"
+
+echo "$ECHO_PREPEND START"
+
+script/bootstrap
+
+
+echo "$ECHO_PREPEND updating pre-commit config to the latest repos versions"
+pre-commit autoupdate
+
+echo "$ECHO_PREPEND END"
