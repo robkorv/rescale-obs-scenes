@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+      - name: create exe
+        run: ./script/dist
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: rescale-obs-scenes
+          path: dist/windows/rescale-obs-scenes.exe
