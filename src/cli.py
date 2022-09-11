@@ -32,6 +32,18 @@ def cli(args):
                     item["bounds"]["y"] = args.dest_res
                     item["bounds_type"] = 2
                     item["scale_filter"] = "bicubic"
+                else:
+                    # shift positions
+                    if item["pos"]["x"]:
+                        item["pos"]["x"] *= scale_ratio
+                    if item["pos"]["y"]:
+                        item["pos"]["y"] *= scale_ratio
+
+                    # scale
+                    if item["scale"]["x"]:
+                        item["scale"]["x"] *= scale_ratio
+                    if item["scale"]["y"]:
+                        item["scale"]["y"] *= scale_ratio
 
     with open(args.output, "w") as f:
         json.dump(input_data, f)
