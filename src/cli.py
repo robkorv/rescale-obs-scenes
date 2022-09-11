@@ -4,15 +4,8 @@ import json
 
 
 def cli(args):
-    print(f"{args.input = }")
-    print(f"{args.output = }")
-    print(f"{args.src_res = }")
-    print(f"{args.dest_res = }")
-
     dest_width = int((16 / 9) * args.dest_res)
-    print(f"{dest_width = }")
     scale_ratio = args.dest_res / args.src_res
-    print(f"{scale_ratio = }")
 
     with open(args.input) as f:
         input_data = json.load(f)
