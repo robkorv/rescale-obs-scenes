@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+import argparse
+import json
+
+
+def cli(args):
+    print(f"{args.input = }")
+    print(f"{args.output = }")
+    print(f"{args.src_res = }")
+    print(f"{args.dest_res = }")
+
+    dest_width = int((16 / 9) * args.dest_res)
+    print(f"{dest_width = }")
+    scale_ratio = args.dest_res / args.src_res
+    print(f"{scale_ratio = }")
+
+    with open(args.input) as f:
+        input_data = json.load(f)
+
+    for source in input_data["sources"]:
+        if source["versioned_id"] == "scene":
+            for item in source["settings"]["items"]:
+
+                # item is full-size on input scene
+                if (
+                    item["bounds"]["x"] == 0.0
+                    and item["bounds"]["y"] == 0.0
+                    and item["pos"]["x"] == 0.0
+                    and item["pos"]["y"] == 0.0
+                ):
+                    item["bounds"]["x"] = dest_width
+                    item["bounds"]["y"] = args.dest_res
+                    item["bounds_type"] = 2
+                    item["scale_filter"] = "bicubic"
+
+    with open(args.output, "w") as f:
+        json.dump(input_data, f)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input")
+    parser.add_argument("output")
+    parser.add_argument("src_res", type=int)
+    parser.add_argument("dest_res", type=int)
+    args = parser.parse_args()
+    cli(args)
