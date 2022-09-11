@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+ECHO_PREPEND="${0##*/} ==>"
+
+echo "$ECHO_PREPEND START"
+
+if [ -d "dist" ]; then
+    echo "$ECHO_PREPEND removing dist dir"
+    rm -R dist
+fi
+
+echo "$ECHO_PREPEND creating dist/windows"
+mkdir -vp dist/windows
+
+echo "$ECHO_PREPEND building exe in docker"
+docker run --rm -v "$(pwd):/src/" cdrx/pyinstaller-windows
+
+echo "$ECHO_PREPEND END"
