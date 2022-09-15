@@ -20,7 +20,7 @@ Example
 -   I want rescale this to "3840x2160" resolution
 -   I run `rescale-obs-scenes.exe my-scenes-1080p.json my-scenes-2160p.json 1080 2160`
 -   "my-scenes-2160p.json" contains the rescaled scenes
--   I OBS I change the "Base (Canvas) Resolution" to "3840x2160"
+-   In OBS I change the "Base (Canvas) Resolution" to "3840x2160"
 -   In OBS I remove my current scenes. "Scene Collection" -> "Remove"
 -   Then I import "my-scenes-2160p.json" in OBS. "Scene Collection" -> "Import"
 -   Then I switch to the newly imported scenes by selecting them in "Scene Collection"
