@@ -3,6 +3,8 @@ import argparse
 import json
 import pathlib
 
+FILE_SETTING_KEYS = ["local_file", "file"]
+
 
 def fix_file_path(pathsegment, absolute_input_path, absolute_output_path):
     if pathsegment is None or not pathsegment.strip():
@@ -72,6 +74,16 @@ def cli(args):
                 )
                 if script_tool_path:
                     script_tool["path"] = script_tool_path
+
+    for source in input_data["sources"]:
+        if "settings" in source:
+            settings = source["settings"]
+            for file_key in FILE_SETTING_KEYS:
+                file = fix_file_path(
+                    settings.get(file_key), absolute_input_path, absolute_output_path
+                )
+                if file:
+                    settings[file_key] = file
 
     # resizing
     for source in input_data["sources"]:
