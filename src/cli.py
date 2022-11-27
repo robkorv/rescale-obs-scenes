@@ -4,18 +4,22 @@ import json
 
 
 def cli(args):
+    # calculations
     dest_width = int((16 / 9) * args.dest_res)
     scale_ratio = args.dest_res / args.src_res
 
+    # reading
     with open(args.input) as f:
         input_data = json.load(f)
 
+    # name
     if args.scene_collection_name.strip():
         input_data["name"] = args.scene_collection_name.strip()
     else:
         name = input_data.get("name")
         input_data["name"] = f"{name}-{args.dest_res}p"
 
+    # audio devices
     if args.remove_audio_devices:
         input_data_copy = input_data.copy()
         for key in input_data.keys():
@@ -23,6 +27,7 @@ def cli(args):
                 del input_data_copy[key]
         input_data = input_data_copy
 
+    # resizing
     for source in input_data["sources"]:
         if source["versioned_id"] == "scene":
             for item in source["settings"]["items"]:
@@ -51,6 +56,7 @@ def cli(args):
                     if item["scale"]["y"]:
                         item["scale"]["y"] *= scale_ratio
 
+    # writing
     with open(args.output, "w") as f:
         json.dump(input_data, f)
 
