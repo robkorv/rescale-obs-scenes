@@ -17,6 +17,6 @@ echo "$ECHO_PREPEND creating dist/windows"
 mkdir -vp dist/windows
 
 echo "$ECHO_PREPEND building exe in docker"
-docker run --rm -v "$(pwd):/src/" cdrx/pyinstaller-windows
+docker run --rm -v "$(pwd):/src/" toilal/pyinstaller-windows
 
 echo "$ECHO_PREPEND END"
