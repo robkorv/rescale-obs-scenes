@@ -1,6 +1,38 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import pathlib
+
+
+def fix_file_path(pathsegment, absolute_input_path, absolute_output_path):
+    if pathsegment is None or not pathsegment.strip():
+        return None
+
+    input_parent = absolute_input_path.parent
+    output_parent = absolute_output_path.parent
+
+    other_path = pathlib.Path(pathsegment)
+    if other_path.is_absolute() and other_path.is_file():
+        try:
+            pathsegment = other_path.relative_to(output_parent)
+        except ValueError:
+            pathsegment = other_path
+    else:
+        joined_path = output_parent.joinpath(other_path)
+        if joined_path.is_file():
+            pathsegment = joined_path
+        else:
+            output_found_files = list(output_parent.rglob(other_path.name))
+            if len(output_found_files) == 1:
+                pathsegment = output_found_files[-1]
+            else:
+                input_found_files = list(input_parent.rglob(other_path.name))
+                if len(input_found_files) == 1:
+                    pathsegment = output_found_files[-1].resolve()
+
+    if isinstance(pathsegment, pathlib.Path):
+        pathsegment = str(pathsegment)
+    return pathsegment
 
 
 def cli(args):
@@ -8,8 +40,12 @@ def cli(args):
     dest_width = int((16 / 9) * args.dest_res)
     scale_ratio = args.dest_res / args.src_res
 
+    # paths
+    absolute_input_path = pathlib.Path(args.input_path).resolve(strict=True)
+    absolute_output_path = pathlib.Path(args.output_path).resolve()
+
     # reading
-    with open(args.input) as f:
+    with open(absolute_input_path) as f:
         input_data = json.load(f)
 
     # name
@@ -26,6 +62,16 @@ def cli(args):
             if "AudioDevice" in key:
                 del input_data_copy[key]
         input_data = input_data_copy
+
+    # files
+    if args.fix_file_paths:
+        if "modules" in input_data and "scripts-tool" in input_data["modules"]:
+            for script_tool in input_data["modules"]["scripts-tool"]:
+                script_tool_path = fix_file_path(
+                    script_tool.get("path"), absolute_input_path, absolute_output_path
+                )
+                if script_tool_path:
+                    script_tool["path"] = script_tool_path
 
     # resizing
     for source in input_data["sources"]:
@@ -57,17 +103,18 @@ def cli(args):
                         item["scale"]["y"] *= scale_ratio
 
     # writing
-    with open(args.output, "w") as f:
+    with open(absolute_output_path, "w") as f:
         json.dump(input_data, f)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("input")
-    parser.add_argument("output")
+    parser.add_argument("input_path")
+    parser.add_argument("output_path")
     parser.add_argument("src_res", type=int)
     parser.add_argument("dest_res", type=int)
     parser.add_argument("-r", "--remove-audio-devices", action="store_true")
     parser.add_argument("-n", "--scene-collection-name", default="")
+    parser.add_argument("-f", "--fix-file-paths", action="store_true")
     args = parser.parse_args()
     cli(args)
