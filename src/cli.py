@@ -10,6 +10,12 @@ def cli(args):
     with open(args.input) as f:
         input_data = json.load(f)
 
+    if args.scene_collection_name.strip():
+        input_data["name"] = args.scene_collection_name.strip()
+    else:
+        name = input_data.get("name")
+        input_data["name"] = f"{name}-{args.dest_res}p"
+
     if args.remove_audio_devices:
         input_data_copy = input_data.copy()
         for key in input_data.keys():
@@ -56,5 +62,6 @@ if __name__ == "__main__":
     parser.add_argument("src_res", type=int)
     parser.add_argument("dest_res", type=int)
     parser.add_argument("-r", "--remove-audio-devices", action="store_true")
+    parser.add_argument("-n", "--scene-collection-name", default="")
     args = parser.parse_args()
     cli(args)
