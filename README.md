@@ -9,6 +9,22 @@ WARNING: Make sure you always create a backup of your exported scenes before tem
 
 ## usage
 
+```
+usage: rescale-obs-scenes.exe [-h] [-r] [-n SCENE_COLLECTION_NAME] [-f] input_path output_path src_res dest_res
+
+positional arguments:
+  input_path
+  output_path
+  src_res
+  dest_res
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -r, --remove-audio-devices
+  -n SCENE_COLLECTION_NAME, --scene-collection-name SCENE_COLLECTION_NAME
+  -f, --fix-file-paths
+```
+
 -   In OBS use "Scene Collection" -> "Export" to write your scenes to a JSON file.
 -   In OBS Take note of the "Base (Canvas) Resolution" at "File" -> "Settings" -> "Video"
 -   Run `rescale-obs-scenes.exe input.json output.json src_res dest_res`
