@@ -21,13 +21,16 @@ def fix_file_path(pathsegment, absolute_input_path, absolute_output_path):
         if joined_path.is_file():
             pathsegment = joined_path
         else:
-            output_found_files = list(output_parent.rglob(other_path.name))
-            if len(output_found_files) == 1:
-                pathsegment = output_found_files[-1]
-            else:
-                input_found_files = list(input_parent.rglob(other_path.name))
-                if len(input_found_files) == 1:
-                    pathsegment = output_found_files[-1]
+            found_files = list(output_parent.rglob(other_path.name)) or list(
+                input_parent.rglob(other_path.name)
+            )
+            if found_files:
+                other_path_parts = set(other_path.parts)
+                found_files_parts_matches = [
+                    (found_file, len(list(other_path_parts & set(found_file.parts))))
+                    for found_file in found_files
+                ]
+                pathsegment = max(found_files_parts_matches, key=lambda x: x[1])[0]
 
     if isinstance(pathsegment, pathlib.Path):
         pathsegment = str(pathsegment.resolve())
