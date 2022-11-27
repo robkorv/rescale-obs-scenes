@@ -10,6 +10,9 @@ def cli(args):
     with open(args.input) as f:
         input_data = json.load(f)
 
+    name = input_data.get("name")
+    input_data["name"] = f"{name}-{args.dest_res}p"
+
     if args.remove_audio_devices:
         input_data_copy = input_data.copy()
         for key in input_data.keys():
