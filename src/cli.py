@@ -14,11 +14,8 @@ def fix_file_path(pathsegment, absolute_input_path, absolute_output_path):
     output_parent = absolute_output_path.parent
 
     other_path = pathlib.Path(pathsegment)
-    if other_path.is_absolute() and other_path.is_file():
-        try:
-            pathsegment = other_path.relative_to(output_parent)
-        except ValueError:
-            pathsegment = other_path
+    if other_path.is_file():
+        pathsegment = other_path
     else:
         joined_path = output_parent.joinpath(other_path)
         if joined_path.is_file():
@@ -30,10 +27,11 @@ def fix_file_path(pathsegment, absolute_input_path, absolute_output_path):
             else:
                 input_found_files = list(input_parent.rglob(other_path.name))
                 if len(input_found_files) == 1:
-                    pathsegment = output_found_files[-1].resolve()
+                    pathsegment = output_found_files[-1]
 
     if isinstance(pathsegment, pathlib.Path):
-        pathsegment = str(pathsegment)
+        pathsegment = str(pathsegment.resolve())
+
     return pathsegment
 
 
