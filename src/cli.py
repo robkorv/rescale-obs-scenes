@@ -10,6 +10,13 @@ def cli(args):
     with open(args.input) as f:
         input_data = json.load(f)
 
+    if args.remove_audio_devices:
+        input_data_copy = input_data.copy()
+        for key in input_data.keys():
+            if "AudioDevice" in key:
+                del input_data_copy[key]
+        input_data = input_data_copy
+
     for source in input_data["sources"]:
         if source["versioned_id"] == "scene":
             for item in source["settings"]["items"]:
@@ -48,5 +55,6 @@ if __name__ == "__main__":
     parser.add_argument("output")
     parser.add_argument("src_res", type=int)
     parser.add_argument("dest_res", type=int)
+    parser.add_argument("-r", "--remove-audio-devices", action="store_true")
     args = parser.parse_args()
     cli(args)
