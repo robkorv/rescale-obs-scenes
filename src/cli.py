@@ -3,7 +3,7 @@ import argparse
 import json
 import pathlib
 
-FILE_SETTING_KEYS = ["local_file", "file"]
+FILE_SETTING_KEYS = ["local_file", "file", "path"]
 
 
 def fix_file_path(pathsegment, absolute_input_path, absolute_output_path):
@@ -79,6 +79,16 @@ def cli(args):
     for source in input_data["sources"]:
         if "settings" in source:
             settings = source["settings"]
+            for file_key in FILE_SETTING_KEYS:
+                file = fix_file_path(
+                    settings.get(file_key), absolute_input_path, absolute_output_path
+                )
+                if file:
+                    settings[file_key] = file
+
+    for transition in input_data["transitions"]:
+        if "settings" in transition:
+            settings = transition["settings"]
             for file_key in FILE_SETTING_KEYS:
                 file = fix_file_path(
                     settings.get(file_key), absolute_input_path, absolute_output_path
