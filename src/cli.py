@@ -3,6 +3,8 @@ import argparse
 import json
 import pathlib
 
+import charset_normalizer
+
 FILE_SETTING_KEYS = ["local_file", "file", "path"]
 
 
@@ -45,10 +47,11 @@ def cli(args):
 
     # paths
     absolute_input_path = pathlib.Path(args.input_path).resolve(strict=True)
+    encoding = charset_normalizer.from_path(absolute_input_path).best().encoding
     absolute_output_path = pathlib.Path(args.output_path).resolve()
 
     # reading
-    with open(absolute_input_path) as f:
+    with open(absolute_input_path, encoding=encoding) as f:
         input_data = json.load(f)
 
     # name
@@ -100,7 +103,6 @@ def cli(args):
     for source in input_data["sources"]:
         if source["versioned_id"] == "scene":
             for item in source["settings"]["items"]:
-
                 # item is full-size on input scene
                 if (
                     item["bounds"]["x"] == 0.0
